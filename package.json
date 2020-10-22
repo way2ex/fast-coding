@@ -1,6 +1,6 @@
 {
 	"name": "fast-coding",
-	"displayName": "fast-coding",
+	"displayName": "Fast-coding",
 	"description": "make coding fast",
 	"version": "0.0.1",
 	"engines": {
@@ -8,10 +8,10 @@
 	},
 	"publisher": "knissing",
 	"categories": [
-		"Other"
+		"Programming Languages"
 	],
 	"activationEvents": [
-		"*"
+		"onLanguage:vue"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
