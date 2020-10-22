@@ -9,15 +9,15 @@ export class ResolveRegister {
     import() {
 
     }
-    register() {
-        const edit = this.getTextEdit();
+    async register() {
+        const edit = await this.getTextEdit();
         vscode.workspace.applyEdit(edit);
     }
-    getTextEdit() {
+    async getTextEdit() {
         let edit = new vscode.WorkspaceEdit();
         let text = this.document.getText();
         text = this.resolveImport(text);
-        text = this.resolveRegister(text);
+        text = await this.resolveRegister(text);
         edit.replace(this.document.uri, new vscode.Range(0, 0, this.document.lineCount, 0), text);
         return edit;
     }
@@ -52,7 +52,7 @@ export class ResolveRegister {
         return text;
     }
 
-    private resolveRegister(text: string) {
+    private async resolveRegister(text: string) {
         const componentsExp = /components: ?\{([^}]*)\},?/;
         const foundComponents = text.match(componentsExp);
         if (foundComponents) {
@@ -68,7 +68,37 @@ export class ResolveRegister {
             componentList.push([ `El${this.component}`, this.component ]);
             text = text.replace(componentsExp, this.createRegisterStatement(componentList));
         } else {
+            const startOptionExp = /export\s*default\s*(defineComponent\s*?\()?\s*\{/;
+            let match = startOptionExp.exec(text);
+            if (!match) {
+                vscode.window.showWarningMessage('[Fast Coding]Can not find proper position for components option.');
+                return text;
+            }
+            const registerStatement = this.createRegisterStatement([ [`El${this.component}`, this.component] ]);
+            let insertIndex = match.index + match[0].length;
 
+            while(/\s/.test(text[insertIndex])) {
+                insertIndex++;
+            }
+
+            console.log(text[insertIndex]);
+            if (text[insertIndex] === '}') {
+                text = text.replace(/(export\s*default\s*(?:defineComponent\s*?\()?\s*\{)(\s*)\}/, (m, p1, p2) => {
+                    return `${p1}${this.eol}\t${registerStatement}${this.eol}}`;
+                });
+            } else {
+                const firstLine = this.document.lineAt(this.document.positionAt(insertIndex));
+                if (firstLine.text.match(/name:/)) {
+                    text = text.replace(/(name:\s*['"][\w-]*['"]),?/, m0 => {
+                        const res = `${m0}${this.eol}\t${registerStatement}${this.eol}`;
+                        return res;
+                    });
+                } else {
+                    text = text.replace(/export\s*default\s*(?:defineComponent\s*?\()?\s*\{/, m0 => {
+                        return `${m0}${this.eol}\t${registerStatement}${this.eol}`
+                    });
+                }
+            }
         }
         return text;
     }
