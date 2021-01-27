@@ -1,0 +1,14 @@
+{
+    "Cut multiple line ": {
+        "prefix": "cutmultiline",
+        "body": [
+            "overflow: hidden;",
+            "text-overflow: ellipsis;",
+            "display: -webkit-box;",
+            "-webkit-line-clamp: 2$1; //多行在这里修改数字即可",
+            "overflow:hidden;",
+            "/* autoprefixer: ignore next */",
+            "-webkit-box-orient: vertical;$0"
+        ]
+    }
+}

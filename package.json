@@ -8,7 +8,8 @@
 	},
 	"publisher": "knissing",
 	"categories": [
-		"Programming Languages"
+		"Programming Languages",
+		"Snippets"
 	],
 	"activationEvents": [
 		"onLanguage:vue"
@@ -19,6 +20,12 @@
 			{
 				"command": "fast-coding.element.autoRegister",
 				"title": "Auto register component"
+			}
+		],
+		"snippets": [
+			{
+				"language": "vue",
+				"path": "./snippets/vue-style.json"
 			}
 		]
 	},
